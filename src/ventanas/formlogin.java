@@ -10,6 +10,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
+import clases.valida_ingreso;
+import java.sql.DriverManager;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -31,7 +35,45 @@ public class formlogin extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
     }
-
+         public void prepararbasededatos () {
+     try{
+      connect =(Connection) DriverManager.getConnection(DataBase,Usuario,password);
+      System.out.println("Se ha establecidouna conexion con la base de datos"+DataBase);
+      sta=(Statement) connect.createStatement();
+     }
+     catch(Exception e)
+     {
+     JOptionPane.showMessageDialog(null,"Error al tratar de conectar, verifique sus datos" );
+     }
+     }
+        public int validar () throws SQLException{
+    String user = formlogin.usuario.getText();
+    String pass = String.valueOf(formlogin.contrasenia.getPassword());
+    
+    int resultado=0;
+    //String SSQL ="select * from ACCESO where CEDULA_IDENTIDAD='"+user+"'AND CONTRASENIA='"+pass+"')";
+    //rs= sta.executeQuery("select * from ACCESO WHERE CEDULA_IDENTIDAD ='"+Integer.parseInt(usuario.getText())+"'AND CONTRASENIA='"+String.valueOf(formlogin.contrasenia.getPassword())+"'");   
+    try{
+      connect =(Connection) DriverManager.getConnection(DataBase,Usuario,password);
+     sta= connect.createStatement();
+     rs= sta.executeQuery("select * from ACCESO WHERE CEDULA_IDENTIDAD ='"+(usuario.getText())+"'AND CONTRASENIA='"+String.valueOf(formlogin.contrasenia.getPassword())+"'");
+     //rs= sta.executeQuery(SSQL);
+     if(rs.next()){
+       resultado=1;
+     }
+     }
+     catch(Exception e)
+     {
+     JOptionPane.showMessageDialog(null,e,"Error al tratar de conectar1",JOptionPane.ERROR_MESSAGE);
+     }finally{
+        try {
+            connect.close();
+        } catch (SQLException e) {
+           JOptionPane.showMessageDialog(null,e,"Error al tratar de desconectar",JOptionPane.ERROR_MESSAGE);
+        }
+         }
+         return resultado;
+         }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -132,7 +174,51 @@ public class formlogin extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void ingresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ingresarActionPerformed
-
+   /*conexionbasededatosoracle conect =new conexionbasededatosoracle().conectar();
+ 
+        try{
+       rs= sta.executeQuery("select * from ACCESO WHERE CEDULA_IDENTIDAD ='"+Integer.parseInt(usuario.getText())+"'AND CONTRASENIA='"+String.valueOf(formlogin.contrasenia.getPassword())+"'");
+       
+       while(rs.next()){
+       String us="admin";    
+       String c ="123";
+       String pas =new String(contrasenia.getPassword());
+       if(usuario.getText().equals(us)&&pas.equals(c)){
+              registros obj =new registros();
+              obj.setVisible(true);
+              dispose();
+       }else{
+        regisstro_entrada obj =new regisstro_entrada();
+              obj.setVisible(true);
+              dispose();
+       }
+       }
+       }catch(SQLException ex){
+               JOptionPane.showMessageDialog(null,"Acceso Denegado:\n"+"Por favor ingrese un usuario y/o contraseña correctos","Acceso denegado", JOptionPane.ERROR_MESSAGE);
+       }*/
+        conexionbasededatosoracle conect =new conexionbasededatosoracle().conectar();   
+        try {
+            if(validar()==1){
+                String us = "admin";
+                String c ="123";
+                String pas = new String(contrasenia.getPassword());
+                
+                if (usuario.getText().equals(us)&&pas.equals(c)){
+                    registros obj =new registros();
+                    obj.setVisible(true);
+                    dispose();
+                }else{
+                    registra_hora obj =new registra_hora();
+                    obj.setVisible(true);
+                    dispose();
+                }
+            }else{
+                JOptionPane.showMessageDialog(null,"Acceso Denegado:\n"+"Por favor ingrese un usuario y/o contraseña correctos","Acceso denegado", JOptionPane.ERROR_MESSAGE);
+                
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(formlogin.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
     }//GEN-LAST:event_ingresarActionPerformed
 

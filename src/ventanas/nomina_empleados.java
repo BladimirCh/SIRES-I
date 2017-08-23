@@ -4,12 +4,23 @@
  * and open the template in the editor.
  */
 package ventanas;
-
+import java.sql.*;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author Bladimr Chavez
  */
 public class nomina_empleados extends javax.swing.JFrame {
+    //String DataBase = "jdbc:oracle:thin:@localhost:1521:XE";
+    //String Usuario ="system";
+    //String password = "10marzo2013";
+    
+    //Connection connect= null;
+    //Statement sta =null;
+    //ResultSet rs=null;
+     static Connection cn;
+     static Statement s;
+     static ResultSet rs;
 
     /**
      * Creates new form registro_salida
@@ -33,6 +44,7 @@ public class nomina_empleados extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         jLabel4 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
+        ver = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -47,13 +59,13 @@ public class nomina_empleados extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Nombre y Apellido", "Cedula de identidad", "Dirección", "Teléfono", "Celular"
+                "Nombre ", "Apellido", "Cedula", "Teléfono", "Celular", "Direccion", "Ex. Laboral", "A. Laboral", "Contraseña"
             }
         ));
         jScrollPane1.setViewportView(jTable1);
@@ -74,6 +86,14 @@ public class nomina_empleados extends javax.swing.JFrame {
         });
         getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 480, 90, 30));
 
+        ver.setText("ver empleados");
+        ver.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                verActionPerformed(evt);
+            }
+        });
+        getContentPane().add(ver, new org.netbeans.lib.awtextra.AbsoluteConstraints(203, 480, 150, 30));
+
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/04C.jpg"))); // NOI18N
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 778, 536));
 
@@ -85,6 +105,42 @@ public class nomina_empleados extends javax.swing.JFrame {
     obj.setVisible(true);
     dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void verActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verActionPerformed
+ try {
+            //Para establecer el modelo al JTable
+            DefaultTableModel modelo = new DefaultTableModel();
+            this.jTable1.setModel(modelo);
+            //Para conectarnos a nuestra base de datos
+            String url = "jdbc:oracle:thin:@localhost:1521:XE";
+            // Establecemos los valores de cadena de conexión, usuario y contraseña
+            cn = DriverManager.getConnection(url, "system", "10marzo2013");
+            //Para ejecutar la consulta
+            s = cn.createStatement();
+            //Ejecutamos la consulta y los datos lo almacenamos en un ResultSet
+             rs = s.executeQuery("SELECT * FROM EMPLEADOS");
+            //Obteniendo la informacion de las columnas que estan siendo consultadas
+            ResultSetMetaData rsMd = rs.getMetaData();
+            //La cantidad de columnas que tiene la consulta
+            int cantidadColumnas = rsMd.getColumnCount();
+            //Establecer como cabezeras el nombre de las colimnas
+            for (int i = 1; i <= cantidadColumnas; i++) {
+             modelo.addColumn(rsMd.getColumnLabel(i));
+            }
+            //Creando las filas para el JTable
+            while (rs.next()) {   
+             Object[] fila = new Object[cantidadColumnas];
+             for (int i = 0; i < cantidadColumnas; i++) {
+               fila[i]=rs.getObject(i+1);
+             }
+             modelo.addRow(fila);
+            }
+            rs.close();
+            cn.close();
+       } catch (Exception ex) {
+        ex.printStackTrace();
+       }    
+    }//GEN-LAST:event_verActionPerformed
 
     /**
      * @param args the command line arguments
@@ -132,5 +188,6 @@ public class nomina_empleados extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JButton ver;
     // End of variables declaration//GEN-END:variables
 }

@@ -5,12 +5,26 @@
  */
 package ventanas;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Bladimr Chavez
  */
 public class registro_empleado extends javax.swing.JFrame {
-
+    String DataBase = "jdbc:oracle:thin:@localhost:1521:XE";
+    String Usuario ="system";
+    String password = "10marzo2013";
+    String DataBase1 = "jdbc:postgresql://localhost:5432/postgres";
+    String Usuario1 ="postgres";
+    String password1 = "10marzo2013";
+    Connection connect= null;
+    Statement sta =null;
+    ResultSet rs=null;
     /**
      * Creates new form registro_empleado
      */
@@ -18,7 +32,28 @@ public class registro_empleado extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
     }
-
+         public void prepararbasededatos () {
+     try{
+      connect =(Connection) DriverManager.getConnection(DataBase,Usuario,password);
+      System.out.println("Se ha establecidouna conexion con la base de datos"+DataBase);
+      sta=(Statement) connect.createStatement();
+     }
+     catch(Exception e)
+     {
+     JOptionPane.showMessageDialog(null,"Error al tratar de conectar, verifique sus datos" );
+     }
+     }
+         public void prepararbasededatos2 () {
+     try{
+      connect =(Connection) DriverManager.getConnection(DataBase1,Usuario1,password1);
+      System.out.println("Se ha establecidouna conexion con la base de datos"+DataBase);
+      sta=(Statement) connect.createStatement();
+     }
+     catch(Exception e)
+     {
+     JOptionPane.showMessageDialog(null,"Error al tratar de conectar, verifique sus datos" );
+     }
+     }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -44,12 +79,14 @@ public class registro_empleado extends javax.swing.JFrame {
         txt_celular = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        txtexperiencia = new javax.swing.JTextArea();
         jLabel10 = new javax.swing.JLabel();
-        txt_anios = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        experiencias = new javax.swing.JTextField();
+        guardar = new javax.swing.JButton();
         atras = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        contra = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(720, 500));
@@ -102,24 +139,29 @@ public class registro_empleado extends javax.swing.JFrame {
         jLabel9.setText("Experiencias Laborales");
         getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 290, -1, -1));
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        txtexperiencia.setColumns(20);
+        txtexperiencia.setRows(5);
+        jScrollPane1.setViewportView(txtexperiencia);
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 310, 371, 83));
 
         jLabel10.setText("Años de Experiencias");
-        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 290, -1, -1));
+        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 320, -1, -1));
 
-        txt_anios.addActionListener(new java.awt.event.ActionListener() {
+        experiencias.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_aniosActionPerformed(evt);
+                experienciasActionPerformed(evt);
             }
         });
-        getContentPane().add(txt_anios, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 310, 120, 30));
+        getContentPane().add(experiencias, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 350, 120, 30));
 
-        jButton1.setText("Guardar");
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 420, 120, 30));
+        guardar.setText("Guardar");
+        guardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                guardarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(guardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 420, 120, 30));
 
         atras.setText("Volver");
         atras.addActionListener(new java.awt.event.ActionListener() {
@@ -132,6 +174,11 @@ public class registro_empleado extends javax.swing.JFrame {
         jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/20496087_1621698584538792_2063384811_n.png"))); // NOI18N
         getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 450, -1, -1));
 
+        jLabel12.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
+        jLabel12.setText("Contraseña");
+        getContentPane().add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 220, -1, -1));
+        getContentPane().add(contra, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 240, 150, 30));
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -139,15 +186,43 @@ public class registro_empleado extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txt_nombreActionPerformed
 
-    private void txt_aniosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_aniosActionPerformed
+    private void experienciasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_experienciasActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txt_aniosActionPerformed
+    }//GEN-LAST:event_experienciasActionPerformed
 
     private void atrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_atrasActionPerformed
     registros obj =new registros();
     obj.setVisible(true);
     dispose();
     }//GEN-LAST:event_atrasActionPerformed
+
+    private void guardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarActionPerformed
+     conexionbasededatosoracle conect =new conexionbasededatosoracle().conectar();
+     conexionpostgres conect2 = new conexionpostgres().conectar1();
+        String a= txt_nombre.getText();
+        String b =txt_apellido.getText();
+        String c= txt_cedula.getText();
+        String d= txt_direccion.getText();
+        String e= txt_telefono.getText();
+        String f= txt_celular.getText();
+        String g= txtexperiencia.getText();
+        String h= experiencias.getText();
+        String i= new String(contra.getPassword());
+        conect.ejecutar("insert into EMPLEADOS  values('"+a+"','"+b+"','"+c+"','"+d+"','"+e+"','"+f+"','"+g+"','"+h+"','"+i+"')");
+        conect2.ejecutar("insert into EMPLEADOS  values('"+a+"','"+b+"','"+c+"','"+d+"','"+e+"','"+f+"','"+g+"','"+h+"','"+i+"')");
+        
+        JOptionPane.showMessageDialog(null, "Guardado en Base de datos");
+        
+        txt_nombre.setText("");
+        txt_apellido.setText("");
+        txt_cedula.setText("");
+        txt_direccion.setText("");
+        txt_telefono.setText("");
+        txt_celular.setText("");
+        txtexperiencia.setText("");
+        experiencias.setText("");
+        contra.setText("");
+    }//GEN-LAST:event_guardarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -186,10 +261,13 @@ public class registro_empleado extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton atras;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JPasswordField contra;
+    private javax.swing.JTextField experiencias;
+    private javax.swing.JButton guardar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -199,13 +277,12 @@ public class registro_empleado extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField txt_anios;
     private javax.swing.JTextField txt_apellido;
     private javax.swing.JTextField txt_cedula;
     private javax.swing.JTextField txt_celular;
     private javax.swing.JTextField txt_direccion;
     private javax.swing.JTextField txt_nombre;
     private javax.swing.JTextField txt_telefono;
+    private javax.swing.JTextArea txtexperiencia;
     // End of variables declaration//GEN-END:variables
 }

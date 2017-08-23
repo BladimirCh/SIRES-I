@@ -5,9 +5,14 @@
  */
 package ventanas;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.*;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -16,6 +21,15 @@ import java.util.*;
 public class regisstro_entrada extends javax.swing.JFrame implements Runnable{
     String hora,minutos,segundos,mes;
     Thread hilo;
+        String DataBase = "jdbc:oracle:thin:@localhost:1521:XE";
+    String Usuario ="system";
+    String password = "10marzo2013";
+    
+    
+    
+    Connection connect= null;
+    Statement sta =null;
+    ResultSet rs=null;
 
     /**
      * Creates new form regisstro_entrada
@@ -24,6 +38,7 @@ public class regisstro_entrada extends javax.swing.JFrame implements Runnable{
         initComponents();
         this.setLocationRelativeTo(null);
         fecha.setText(fechaActual());
+        solo_mes.setText(mes_actual());
         fechas.setText(fechaActual());
         hilo= new Thread(this);
         hilo.start();
@@ -75,7 +90,9 @@ public class regisstro_entrada extends javax.swing.JFrame implements Runnable{
         jLabel6 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         salir = new javax.swing.JButton();
-        jLabel15 = new javax.swing.JLabel();
+        solo_mes = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
+        anticipo = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         pann = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
@@ -90,6 +107,8 @@ public class regisstro_entrada extends javax.swing.JFrame implements Runnable{
         jLabel10 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        anticiposs = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
@@ -131,7 +150,12 @@ public class regisstro_entrada extends javax.swing.JFrame implements Runnable{
         jPanel2.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 50, 33, 25));
 
         jButton1.setText("Registrar");
-        jPanel2.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 240, 110, 40));
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel2.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 250, 110, 40));
 
         salir.setText("Salir");
         salir.addActionListener(new java.awt.event.ActionListener() {
@@ -139,11 +163,16 @@ public class regisstro_entrada extends javax.swing.JFrame implements Runnable{
                 salirActionPerformed(evt);
             }
         });
-        jPanel2.add(salir, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 290, 110, 40));
+        jPanel2.add(salir, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 300, 110, 40));
 
-        jLabel15.setFont(new java.awt.Font("Times New Roman", 2, 14)); // NOI18N
-        jLabel15.setText("jLabel15");
-        jPanel2.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 54, -1, 20));
+        solo_mes.setFont(new java.awt.Font("Times New Roman", 2, 14)); // NOI18N
+        solo_mes.setText("jLabel15");
+        jPanel2.add(solo_mes, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 54, -1, 20));
+
+        jLabel18.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
+        jLabel18.setText("Anticipo");
+        jPanel2.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 160, -1, -1));
+        jPanel2.add(anticipo, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 190, 130, 30));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -179,6 +208,11 @@ public class regisstro_entrada extends javax.swing.JFrame implements Runnable{
         jLabel13.setText("Número de Cedula");
 
         jButton2.setText("Registrar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Salir");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -195,15 +229,15 @@ public class regisstro_entrada extends javax.swing.JFrame implements Runnable{
 
         jLabel16.setToolTipText("");
 
+        jLabel19.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
+        jLabel19.setText("Anticipos");
+
         javax.swing.GroupLayout pannLayout = new javax.swing.GroupLayout(pann);
         pann.setLayout(pannLayout);
         pannLayout.setHorizontalGroup(
             pannLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pannLayout.createSequentialGroup()
                 .addGroup(pannLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pannLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(pannLayout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(pannLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -215,21 +249,30 @@ public class regisstro_entrada extends javax.swing.JFrame implements Runnable{
                             .addComponent(horasalida)))
                     .addGroup(pannLayout.createSequentialGroup()
                         .addGap(277, 277, 277)
-                        .addGroup(pannLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(pannLayout.createSequentialGroup()
-                                .addComponent(jLabel8)
-                                .addGap(118, 118, 118)
-                                .addComponent(jLabel10)
-                                .addGap(41, 41, 41)
-                                .addComponent(jLabel12))
-                            .addGroup(pannLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(jButton3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 124, Short.MAX_VALUE))))
+                        .addComponent(jLabel8)
+                        .addGap(118, 118, 118)
+                        .addComponent(jLabel10)
+                        .addGap(41, 41, 41)
+                        .addComponent(jLabel12))
                     .addComponent(jLabel16)
                     .addGroup(pannLayout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(132, 132, 132)
+                        .addComponent(anticiposs, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pannLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(pannLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(201, 201, 201))
+            .addGroup(pannLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel19)
+                .addGap(156, 156, 156))
         );
         pannLayout.setVerticalGroup(
             pannLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -253,14 +296,18 @@ public class regisstro_entrada extends javax.swing.JFrame implements Runnable{
                     .addComponent(fechas)
                     .addComponent(horasalida))
                 .addGap(18, 18, 18)
-                .addComponent(jLabel13)
+                .addGroup(pannLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel13)
+                    .addComponent(jLabel19))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(13, 13, 13)
+                .addGroup(pannLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(anticiposs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(20, 20, 20)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(59, 59, 59))
+                .addGap(47, 47, 47))
         );
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -300,13 +347,35 @@ public class regisstro_entrada extends javax.swing.JFrame implements Runnable{
         obj.setVisible(true);
         dispose();
     }//GEN-LAST:event_salirActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+      Integer ci= new Integer(txtcedula.getText()); 
+        conexionbasededatosoracle conect =new conexionbasededatosoracle().conectar();
+        conect.ejecutar("insert into horas  values(to_char(sysdate,'MM/YYYY'),"+ci+",sysdate,TO_CHAR(LOCALTIMESTAMP,'HH24:MI'),'',"+anticipo.getText()+",'')");
+        JOptionPane.showMessageDialog(null, "Guardado en Base de datos Oracle");
+
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+      Integer ci= new Integer(jTextField2.getText());  
+
+        conexionbasededatosoracle conect =new conexionbasededatosoracle().conectar();
+        conect.ejecutar("update horas  set hora_de_salida = to_char(LocalTIMESTAMP,'HH24:MI') where cedula_identidad='"+ci+"'and to_number(to_char(fecha, 'DDMMYY'))=to_number(to_char(sysdate, 'DDMMYY'))");
+        JOptionPane.showMessageDialog(null, "Guardado en Base de datos Oracle");
+    }//GEN-LAST:event_jButton2ActionPerformed
     public static String fechaActual(){
     Date fecha = new Date();
     SimpleDateFormat formatofecha=new SimpleDateFormat("dd/MM/YYYY");
     return formatofecha.format(fecha);
     }
+    public static String mes_actual(){
+    Date solo_mes = new Date();
+    SimpleDateFormat formatofecha=new SimpleDateFormat("MM/YYYY");
+    return formatofecha.format(solo_mes);
+    }
     /**
      * @param args the command line arguments
+     * 
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -341,6 +410,8 @@ public class regisstro_entrada extends javax.swing.JFrame implements Runnable{
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField anticipo;
+    private javax.swing.JTextField anticiposs;
     private javax.swing.JLabel fecha;
     private javax.swing.JLabel fechas;
     private javax.swing.JLabel horasalida;
@@ -353,9 +424,10 @@ public class regisstro_entrada extends javax.swing.JFrame implements Runnable{
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -371,6 +443,7 @@ public class regisstro_entrada extends javax.swing.JFrame implements Runnable{
     private javax.swing.JTextField jTextField2;
     private javax.swing.JPanel pann;
     private javax.swing.JButton salir;
+    private javax.swing.JLabel solo_mes;
     private javax.swing.JTextField txtcedula;
     private javax.swing.JLabel txthora;
     // End of variables declaration//GEN-END:variables
